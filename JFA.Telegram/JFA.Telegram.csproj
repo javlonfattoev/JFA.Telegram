@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Telegram with commands</Title>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Javlon Fattoev</Authors>
     <Company>JFA</Company>
     <Description>Telegram with commands</Description>
