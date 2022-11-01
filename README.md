@@ -1,5 +1,7 @@
 # JFA.Telegram
 Telegram bot with commands
+> Example project
+- [Xarajat.Bot](https://github.com/javlonfattoev/Xarajat.Bot)
 #
 >Install package from [nuget.org](https://www.nuget.org/packages/JFA.Telegram)
 ```C#
