@@ -25,8 +25,13 @@ public class CommandAttribute : Attribute
 [AttributeUsage(AttributeTargets.Method)]
 public class MethodAttribute : Attribute
 {
-    public string Command { get; set; }
-    public int Role { get; set; }
+    public string? Command { get; set; }
+    public int? Role { get; set; }
+
+    public MethodAttribute()
+    {
+    }
+
     public MethodAttribute(string command) => Command = command;
     public MethodAttribute(string command, int role) : this(command) => Role = role;
 }

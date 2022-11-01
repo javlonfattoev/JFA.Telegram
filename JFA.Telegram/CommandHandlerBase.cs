@@ -16,13 +16,16 @@ public abstract class CommandHandlerBase<T> : ICommandHandler<T> where T : Messa
 
     private static bool Filter(MemberInfo info, string? message)
     {
+        var methodAttribute = info.GetCustomAttribute<MethodAttribute>();
+        if (methodAttribute == null)
+            return false;
+
+        if (string.IsNullOrEmpty(methodAttribute.Command))
+            return true;
+
         if (string.IsNullOrEmpty(message))
             return true;
-
-        var methodAttribute = info.GetCustomAttribute<MethodAttribute>();
-        if (methodAttribute == null || string.IsNullOrEmpty(methodAttribute.Command))
-            return true;
-
+        
         return methodAttribute?.Command == message;
     }
 }
