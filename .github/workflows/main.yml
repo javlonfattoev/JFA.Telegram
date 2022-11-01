@@ -1,0 +1,27 @@
+name: Upload dotnet package
+
+on:
+  push:
+  pull_request:
+  release:
+    types: [created]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0'
+          source-url: https://api.nuget.org/v3/index.json
+        env:
+          NUGET_AUTH_TOKEN: ${{secrets.NUGET_API_KEY}}
+      - run: dotnet build --configuration Release
+      - name: Create the package
+        run: dotnet pack --configuration Release
+      - name: Publish the package to GPR
+        run: dotnet nuget push ./JFA.Telegram/bin/Release/*.nupkg --api-key ${{secrets.NUGET_API_KEY}}
