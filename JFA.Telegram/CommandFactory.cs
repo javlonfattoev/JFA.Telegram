@@ -4,65 +4,56 @@ using System.Reflection;
 
 namespace JFA.Telegram;
 
-public class CommandFactory
+public class CommandFactory : ICommandFactory
 {
-    private static readonly DependencyResolver Resolver = new();
-    private static IReadOnlyList<Command> _commands = new List<Command>();
-    private static bool _isCreated;
+    private readonly DependencyResolver _resolver;
+    private readonly IReadOnlyList<Command> _commands;
 
-    private static void Create()
+    public CommandFactory()
     {
         _commands = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(s => s.GetTypes())
             .Where(t => t.GetCustomAttribute<CommandAttribute>() != null)
             .Select(Command.Create)
             .ToList();
-        
-        Resolver.AddServicesFromAttribute();
-        _commands.ToList().ForEach(c => Resolver.Services.AddScoped(c.Type!));
-        _isCreated = true;
+
+        _resolver = new DependencyResolver();
+        _resolver.AddServicesFromAttribute();
+        _commands.ToList().ForEach(c => _resolver.Services.AddScoped(c.Type!));
     }
 
-    public static ICommand<T>? CreateCommand<T>(T context) where T : MessageContext
+    public ICommandHandler<T>? CreateCommand<T>(T context) where T : MessageContextBase
     {
-        if (!_isCreated) Create();
-
         var command = _commands.FirstOrDefault(c => Filter(c, context));
 
         if (command?.Type == null) return null;
 
-        return (ICommand<T>?)Resolver.GetService(command.Type);
+        return (ICommandHandler<T>?)_resolver.GetService(command.Type);
     }
 
-    private static bool Filter(Command command, MessageContext context)
+    public ICommandHandler<T>? CreateCommand<T>(Type type) where T : MessageContextBase
     {
+        return (ICommandHandler<T>?)_resolver.GetService(type);
+    }
+
+    private static bool Filter(Command command, MessageContextBase context)
+    {
+        var isStepEqual = command.Attribute!.Step == context.Step;
+
         if (context.Step is not null)
         {
             if (string.IsNullOrEmpty(context.Message))
-                return command.Attribute!.Step == context.Step;
+                return isStepEqual;
 
-            return command.Attribute!.Command == context.Message
-                   && command.Attribute!.Step == context.Step;
+            if (string.IsNullOrEmpty(command.Attribute!.Command))
+                return isStepEqual;
+
+            return command.Attribute!.Command == context.Message && isStepEqual;
         }
 
         if (!string.IsNullOrEmpty(context.Message))
             return command.Attribute!.Command == context.Message;
 
         return true;
-    }
-
-    public class Command
-    {
-        public Type? Type { get; set; }
-        public CommandAttribute? Attribute { get; set; }
-
-        public static Command Create(Type type)
-        {
-            return new Command()
-            {
-                Type = type,
-                Attribute = type.GetCustomAttribute<CommandAttribute>()
-            };
-        }
     }
 }

@@ -21,3 +21,12 @@ public class CommandAttribute : Attribute
     public CommandAttribute(Enum step, Enum role) : this(Convert.ToInt32(step), string.Empty, Convert.ToInt32(role)) { }
     public CommandAttribute(int step, int role) : this(step, string.Empty, role) { }
 }
+
+[AttributeUsage(AttributeTargets.Method)]
+public class MethodAttribute : Attribute
+{
+    public string Command { get; set; }
+    public int Role { get; set; }
+    public MethodAttribute(string command) => Command = command;
+    public MethodAttribute(string command, int role) : this(command) => Role = role;
+}
