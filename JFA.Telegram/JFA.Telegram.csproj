@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <Title>Telegram with commands</Title>
-    <Version>9.0.0</Version>
+    <Version>9.0.1</Version>
     <Authors>Javlon Fattoev</Authors>
     <Company>JFA</Company>
     <Description>Telegram with commands</Description>
@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="JFA.DependencyInjection" Version="9.0.1" />
+    <PackageReference Include="JFA.DependencyInjection" Version="9.0.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
   </ItemGroup>
 
